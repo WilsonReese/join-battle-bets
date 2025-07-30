@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Opening Battle Bets…</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script>
+    (function() {
+      const params = new URLSearchParams(location.search);
+      const poolId = params.get('pool_id');
+      const token  = params.get('token');
+
+      // 1) Try to open the app
+      const deepLink = `battlebets://join?pool_id=${poolId}&token=${token}`;
+      location.href = deepLink;
+
+      // 2) After a short delay, send to the App Store
+      setTimeout(() => {
+        // iOS App Store URL — replace YOUR_APPLE_ID
+        location.href = 'https://apps.apple.com/app/idYOUR_APPLE_ID';
+      }, 1500);
+
+      // 3) Show a manual fallback link
+      document.addEventListener('DOMContentLoaded', () => {
+        const a = document.getElementById('fallback');
+        a.href = 'https://apps.apple.com/app/idYOUR_APPLE_ID';
+      });
+    })();
+  </script>
+</head>
+<body style="font-family:sans-serif; text-align:center; padding:2rem;">
+  <h1>Opening Battle Bets…</h1>
+  <p>If nothing happens, <a id="fallback">download the app</a>.</p>
+</body>
+</html>
