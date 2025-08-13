@@ -1,42 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>Join my Battle Bets League</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Rich Link Tags -->
+  <!-- Keep preview identical -->
   <meta property="og:type"        content="website" />
   <meta property="og:title"       content="Join my Battle Bets League!" />
   <meta property="og:description" content="The world's first app for simulated sports betting leagues. Fake money. Real fun." />
   <meta property="og:image"       content="https://cdn.prod.website-files.com/6797de532bc3b2461a7039ff/6889824bd4161c300cd7753b_social-sharing.png" />
   <meta property="og:url"         content="https://join.battlebets.app/join" />
+  <meta name="robots" content="noindex" />
+
+  <style>
+    :root { color-scheme: dark light; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0b1420; color:#fff; margin:0; min-height:100dvh; display:grid; place-items:center; padding:24px; }
+    .card { width:100%; max-width:560px; padding:24px; background:#132235; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.25) }
+    h1 { margin:0 0 8px }
+    p { margin:8px 0 }
+    .btn { display:block; text-align:center; padding:14px 16px; border-radius:12px; text-decoration:none; font-weight:600; margin:12px 0 }
+    .btn-primary { background:#3bd17f; color:#0b1420 }
+    .btn-ghost { background:transparent; border:1px solid #3bd17f; color:#3bd17f }
+    .warn { background:#2b3a52; padding:10px 12px; border-radius:10px; margin-top:12px; font-size:14px; opacity:.95; display:none; }
+    .muted { opacity:.8; font-size:14px }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Open Battle Bets</h1>
+    <p>We’ll open the app with your invite.</p>
+
+    <a id="openBtn" class="btn btn-primary" href="#">Open Battle Bets</a>
+    <a id="downloadBtn" class="btn btn-ghost" href="#">Download Battle Bets</a>
+
+    <div id="hint" class="warn">
+      If nothing happens, open this page in Safari, then tap <b>Open Battle Bets</b> again.
+    </div>
+
+    <p class="muted">If you don’t have the app, the App Store will open.</p>
+  </div>
+
   <script>
-    (function() {
-      const params = new URLSearchParams(location.search);
-      const poolId = params.get('pool_id');
-      const token  = params.get('token');
+    (function () {
+      const qs   = new URLSearchParams(location.search);
+      const pool = qs.get('pool_id') || '';
+      const tok  = qs.get('token')   || '';
 
-      // 1) Try to open the app
-      const deepLink = `battlebets://join?pool_id=${poolId}&token=${token}`;
-      location.href = deepLink;
+      // Handoff target on the AASA host (allowed for Universal Links)
+      const OPEN_UL = `https://aasa.battlebets.app/join?pool_id=${encodeURIComponent(pool)}&token=${encodeURIComponent(tok)}`;
 
-      // 2) After a short delay, send to the App Store
-      setTimeout(() => {
-        // iOS App Store URL — replace YOUR_APPLE_ID
-        location.href = 'https://apps.apple.com/us/app/battle-bets/id6738606749';
-      }, 1500);
+      const APP_STORE     = 'https://apps.apple.com/us/app/battle-bets/id6738606749';
+      const SITE_FALLBACK = 'https://battlebets.app';
 
-      // 3) Show a manual fallback link
-      document.addEventListener('DOMContentLoaded', () => {
-        const a = document.getElementById('fallback');
-        a.href = 'https://www.battlebets.app';
-      });
+      // Hostile in-app webviews often block deep linking
+      const ua = navigator.userAgent.toLowerCase();
+      const hostile = ua.includes('instagram') || ua.includes('snapchat') || ua.includes('fbav') || ua.includes('fbios') || ua.includes('tiktok');
+      if (hostile) document.getElementById('hint').style.display = '';
+
+      // Open → hop to AASA host UL (iOS hands off to the app if installed)
+      document.getElementById('openBtn').onclick = async function (e) {
+        e.preventDefault();
+        if (hostile) {
+          // optional: copy link so user can paste into Safari if blocked
+          try { await navigator.clipboard.writeText(OPEN_UL); } catch (_) {}
+        }
+        location.href = OPEN_UL;
+      };
+
+      // Download → App Store with website fallback
+      document.getElementById('downloadBtn').onclick = function (e) {
+        e.preventDefault();
+        const t = Date.now();
+        location.href = APP_STORE;
+        setTimeout(() => {
+          if (!document.hidden && Date.now() - t > 1100) {
+            location.href = SITE_FALLBACK;
+          }
+        }, 1200);
+      };
     })();
   </script>
-</head>
-<body style="font-family:sans-serif; text-align:center; padding:2rem;">
-  <h1>Opening Battle Bets…</h1>
-  <p>If you are not redirected, <a id="fallback">download the app</a>.</p>
 </body>
 </html>
