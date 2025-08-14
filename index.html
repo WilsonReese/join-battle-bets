@@ -21,6 +21,7 @@
     p  { margin:8px 0 }
     .btn { display:block; text-align:center; padding:14px 16px; border-radius:12px; text-decoration:none; font-weight:600; margin:12px 0 }
     .btn-primary { background:#3bd17f; color:#0b1420 }
+    .btn-ghost { background:transparent; border:1px solid #3bd17f; color:#3bd17f }
     .warn { background:#2b3a52; padding:10px 12px; border-radius:10px; margin-top:12px; font-size:14px; opacity:.95; display:none; }
     .muted { opacity:.8; font-size:14px }
     .link-green { color:#3bd17f; text-decoration:none; font-weight:600; }
@@ -33,12 +34,15 @@
     <p>You've been invited to join a Battle Bets League.</p>
 
     <a id="openBtn" class="btn btn-primary" href="#">Join League (App Required)</a>
+    <a id="downloadBtn" class="btn btn-ghost" href="#">Download Battle Bets</a>
 
     <div id="hint" class="warn">
       If nothing happens, open this page in Safari, then tap <b>Join League</b> again.
     </div>
 
-    <p class="muted" style="margin-top:16px;">Need more info? <a class="link-green" href="https://battlebets.app" target="_blank" rel="noopener">battlebets.app</a></p>
+    <p class="muted" style="margin-top:16px;">
+      Need more info? <a class="link-green" href="https://battlebets.app" target="_blank" rel="noopener">battlebets.app</a>
+    </p>
   </div>
 
   <script>
@@ -50,13 +54,18 @@
       // Handoff target on the AASA host (allowed for Universal Links)
       const OPEN_UL = `https://aasa.battlebets.app/join?pool_id=${encodeURIComponent(pool)}&token=${encodeURIComponent(tok)}`;
 
-      // Hostile in-app webviews often block deep linking
+      // App Store (no timed website fallback)
+      const APP_STORE = 'https://apps.apple.com/us/app/battle-bets/id6738606749';
+
+      // Detect in-app webviews that often block deep linking
       const ua = navigator.userAgent.toLowerCase();
-      const hostile = ua.includes('instagram') || ua.includes('snapchat') || ua.includes('fbav') || ua.includes('fbios') || ua.includes('tiktok');
+      const hostile =
+        ua.includes('instagram') || ua.includes('snapchat') ||
+        ua.includes('fbav') || ua.includes('fbios') || ua.includes('tiktok');
       if (hostile) document.getElementById('hint').style.display = '';
 
       // Join → hop to AASA host UL (iOS hands off to the app if installed;
-      // if not installed, your aasa host's 404 page will guide them to download)
+      // if not installed, your aasa host’s page will prompt to download)
       document.getElementById('openBtn').onclick = async function (e) {
         e.preventDefault();
         if (hostile) {
@@ -64,6 +73,12 @@
           try { await navigator.clipboard.writeText(OPEN_UL); } catch (_) {}
         }
         location.href = OPEN_UL;
+      };
+
+      // Download → App Store (no website fallback)
+      document.getElementById('downloadBtn').onclick = function (e) {
+        e.preventDefault();
+        location.href = APP_STORE;
       };
     })();
   </script>
