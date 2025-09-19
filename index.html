@@ -33,6 +33,7 @@
     <h1>Welcome to Battle Bets</h1>
     <p>You've been invited to join a Battle Bets League.</p>
 
+    <h3 style="margin-top:32px;">Use iOS App (recommended)</h3>
     <p class="muted" style="margin-top:16px;">You will need the Battle Bets app installed before you can join a league.</p>
 
     <a id="openBtn" class="btn btn-primary" href="#">Join League (App Required)</a>
@@ -41,6 +42,10 @@
     <div id="hint" class="warn">
       If nothing happens, open this page in Safari, then tap <b>Join League</b> again.
     </div>
+
+    <h3 style="margin-top:24px;">Use Web App</h3>
+    <p class="muted">No iPhone? You can use Battle Bets in your browser.</p>
+    <a id="webBtn" class="btn btn-primary" href="#">Join League on Web</a>
 
     <p class="muted" style="margin-top:16px;">
       Need more info? <a class="link-green" href="https://battlebets.app" target="_blank" rel="noopener">battlebets.app</a>
@@ -55,6 +60,9 @@
 
       // Handoff target on the AASA host (allowed for Universal Links)
       const OPEN_UL = `https://aasa.battlebets.app/join?pool_id=${encodeURIComponent(pool)}&token=${encodeURIComponent(tok)}`;
+      
+      // Join via web app
+      const WEB_JOIN    = `https://play.battlebets.app/join?pool_id=${encodeURIComponent(pool)}&token=${encodeURIComponent(tok)}`;
 
       // App Store (no timed website fallback)
       const APP_STORE = 'https://apps.apple.com/us/app/battle-bets/id6738606749';
@@ -81,6 +89,12 @@
       document.getElementById('downloadBtn').onclick = function (e) {
         e.preventDefault();
         location.href = APP_STORE;
+      };
+
+      // 🔗 Web join button
+      document.getElementById('webBtn').onclick = function (e) {
+        e.preventDefault();
+        location.href = WEB_JOIN;
       };
     })();
   </script>
